@@ -1,40 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iPhone Font & Emoji Editor</title>
+<title>iPhone Font Editor</title>
 
-<!-- iPhone-like font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 
-<!-- iPhone emoji -->
 <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
-
-<!-- Export -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
 
-<style>
-body{
-  margin:0;
-  background:#0b0b10;
-  font-family:Inter,-apple-system;
-  color:white;
-}
+<body>
 
-/* Opening animation */
-.app{animation:intro .6s ease}
-@keyframes intro{
-  from{opacity:0;transform:scale(.95)}
-  to{opacity:1}
-}
+<div class="app">
 
-/* Canvas */
-.editor{
-  position:relative;
-  height:70vh;
-  background:black;
-  overflow:hidden;
+  <div class="editor" id="canvas">
+    <video id="video" autoplay muted loop></video>
+    <img id="bg">
+  </div>
+
+  <div class="controls">
+    <input type="file" accept="image/*" id="imgInput">
+    <input type="file" accept="video/*" id="videoInput">
+
+    <button id="addText">Add Text</button>
+
+    <input type="color" id="colorPicker">
+    <input type="range" min="14" max="80" id="fontSize">
+
+    <button id="strokeBtn">Stroke</button>
+    <button id="gradientBtn">Gradient</button>
+
+    <button class="emoji" data-emoji="❤️">❤️</button>
+    <button class="emoji" data-emoji="🥺">🥺</button>
+    <button class="emoji" data-emoji="✨">✨</button>
+    <button class="emoji" data-emoji="🕊️">🕊️</button>
+
+    <button id="exportBtn">Download PNG</button>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>  overflow:hidden;
 }
 
 video,img{
