@@ -1,40 +1,132 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const video = document.getElementById("video");
 
-let bgImage = null;
+let img = null;
+let isVideo = false;
+
 let text = "";
-let fontSize = 32;
-let lineHeight = 1.4;
-let textColor = "#000";
+let x = 540, y = 540;
+let size = 50;
+let color = "#000";
+let font = "SF";
+let anim = "none";
+let alpha = 1;
+let scale = 1;
 
-function setCanvasSize(w, h) {
-  canvas.width = w;
-  canvas.height = h;
+canvas.width = 1080;
+canvas.height = 1080;
+
+/* Upload image or video */
+media.onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+
+  if (f.type.startsWith("video")) {
+    isVideo = true;
+    video.src = URL.createObjectURL(f);
+    video.play();
+    drawVideo();
+  } else {
+    isVideo = false;
+    img = new Image();
+    img.src = URL.createObjectURL(f);
+    img.onload = draw;
+  }
+};
+
+/* Canvas size */
+sizePreset.onchange = e => {
+  if (e.target.value === "tt") {
+    canvas.width = 1080;
+    canvas.height = 1920;
+  } else {
+    canvas.width = 1080;
+    canvas.height = 1080;
+  }
   draw();
+};
+
+/* Place text anywhere */
+canvas.onclick = e => {
+  const r = canvas.getBoundingClientRect();
+  x = (e.clientX - r.left) * (canvas.width / r.width);
+  y = (e.clientY - r.top) * (canvas.height / r.height);
+  draw();
+};
+
+/* Add text */
+function addText() {
+  text = textInput.value;
+  size = textSize.value;
+  color = textColor.value;
+  font = fontSelect.value;
+  anim = animation.value;
+  animate();
 }
 
-setCanvasSize(1080, 1080);
-
+/* Draw */
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  if (bgImage) {
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-  }
+  if (img) ctx.drawImage(img,0,0,canvas.width,canvas.height);
 
-  ctx.fillStyle = textColor;
+  ctx.globalAlpha = alpha;
+  ctx.font = `${size}px ${font==="sf"?"SF":font==="serif"?"Times New Roman":"Arial"}`;
   ctx.textAlign = "center";
-  ctx.font = `${fontSize}px iPhone`;
 
-  const lines = text.split("\n");
-  const startY = canvas.height / 3;
+  /* Stroke */
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "rgba(0,0,0,0.7)";
+  ctx.strokeText(text,x,y);
 
-  lines.forEach((line, i) => {
-    ctx.fillText(
-      line,
-      canvas.width / 2,
-      startY + i * fontSize * lineHeight
-    );
+  /* Shadow */
+  ctx.shadowColor = "rgba(0,0,0,0.6)";
+  ctx.shadowBlur = 12;
+
+  ctx.fillStyle = color;
+  ctx.fillText(text,x,y);
+
+  ctx.globalAlpha = 1;
+}
+
+/* Animation */
+function animate() {
+  alpha = anim==="fade" ? 0 : 1;
+  scale = anim==="zoom" ? 0.2 : 1;
+
+  const step = () => {
+    if (anim==="fade" && alpha < 1) alpha += 0.05;
+    if (anim==="zoom" && scale < 1) scale += 0.05;
+
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.scale(scale,scale);
+    ctx.translate(-x,-y);
+    draw();
+    ctx.restore();
+
+    if ((anim==="fade" && alpha<1) || (anim==="zoom" && scale<1))
+      requestAnimationFrame(step);
+  };
+  step();
+}
+
+/* Video preview */
+function drawVideo() {
+  if (!isVideo) return;
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  draw();
+  requestAnimationFrame(drawVideo);
+}
+
+/* Download */
+function download() {
+  const a = document.createElement("a");
+  a.download = "export.png";
+  a.href = canvas.toDataURL("image/png");
+  a.click();
+}    );
   });
 }
 
