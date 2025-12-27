@@ -1,40 +1,175 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let bg = null;
-let textObj = null;
-let dragging = false;
+canvas.width = 1080;
+canvas.height = 1080;
 
-const textInput = document.getElementById("textInput");
-const sizeInput = document.getElementById("size");
+let bgImage = null;
+let texts = [];
+let draggingText = null;
 
-document.getElementById("mediaInput").addEventListener("change", e => {
+let audioBlob = null;
+let audioURL = null;
+let videoFile = null;
+
+/* IMAGE UPLOAD */
+document.getElementById("imageInput").addEventListener("change", e => {
   const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    bg = new Image();
-    bg.onload = () => {
-      canvas.width = bg.width;
-      canvas.height = bg.height;
-      draw();
-    };
-    bg.src = reader.result;
+  const img = new Image();
+  img.onload = () => {
+    bgImage = img;
+    draw();
   };
-  reader.readAsDataURL(file);
+  img.src = URL.createObjectURL(file);
 });
 
+/* AUDIO UPLOAD */
+document.getElementById("audioInput").addEventListener("change", e => {
+  audioBlob = e.target.files[0];
+  audioURL = URL.createObjectURL(audioBlob);
+  document.getElementById("audioPlayer").src = audioURL;
+});
+
+/* VIDEO UPLOAD */
+document.getElementById("videoInput").addEventListener("change", e => {
+  videoFile = e.target.files[0];
+});
+
+/* ADD TEXT */
 function addText() {
-  textObj = {
-    text: textInput.value,
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    size: sizeInput.value
-  };
+  texts.push({
+    text: document.getElementById("textInput").value,
+    x: 200,
+    y: 300,
+    size: document.getElementById("fontSize").value,
+    font: document.getElementById("fontFamily").value,
+    anim: document.getElementById("animation").value,
+    scale: 1,
+    alpha: 1
+  });
   draw();
 }
 
+/* DRAW */
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if (bgImage) ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+  texts.forEach(t => {
+    ctx.save();
+    ctx.globalAlpha = t.alpha;
+    ctx.translate(t.x, t.y);
+    ctx.scale(t.scale, t.scale);
+
+    ctx.font = `${t.size}px ${t.font}`;
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 6;
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 12;
+
+    ctx.strokeText(t.text, 0, 0);
+    ctx.fillText(t.text, 0, 0);
+    ctx.restore();
+  });
+}
+
+/* TEXT DRAG */
+canvas.addEventListener("mousedown", e => {
+  const r = canvas.getBoundingClientRect();
+  const x = (e.clientX - r.left) * canvas.width / r.width;
+  const y = (e.clientY - r.top) * canvas.height / r.height;
+
+  texts.forEach(t => {
+    if (x > t.x && x < t.x + 400 && y < t.y && y > t.y - t.size) {
+      draggingText = t;
+    }
+  });
+});
+
+canvas.addEventListener("mousemove", e => {
+  if (!draggingText) return;
+  const r = canvas.getBoundingClientRect();
+  draggingText.x = (e.clientX - r.left) * canvas.width / r.width;
+  draggingText.y = (e.clientY - r.top) * canvas.height / r.height;
+  draw();
+});
+
+canvas.addEventListener("mouseup", () => draggingText = null);
+
+/* DOWNLOAD IMAGE */
+function downloadImage() {
+  const link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "image.png";
+  link.click();
+}
+
+/* EXTRACT AUDIO FROM VIDEO */
+function extractAudio() {
+  if (!videoFile) return alert("Upload video first");
+
+  const video = document.createElement("video");
+  video.src = URL.createObjectURL(videoFile);
+
+  const audioCtx = new AudioContext();
+  const source = audioCtx.createMediaElementSource(video);
+  const dest = audioCtx.createMediaStreamDestination();
+
+  source.connect(dest);
+  source.connect(audioCtx.destination);
+
+  const recorder = new MediaRecorder(dest.stream);
+  let chunks = [];
+
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.onstop = () => {
+    audioBlob = new Blob(chunks, {type:"audio/webm"});
+    audioURL = URL.createObjectURL(audioBlob);
+    document.getElementById("audioPlayer").src = audioURL;
+  };
+
+  video.onplay = () => recorder.start();
+  video.onended = () => recorder.stop();
+
+  video.play();
+}
+
+/* EXPORT VIDEO WITH AUDIO */
+function exportVideo() {
+  if (!audioBlob) return alert("Add audio first");
+
+  const stream = canvas.captureStream(30);
+  const audio = new Audio(audioURL);
+
+  const audioCtx = new AudioContext();
+  const source = audioCtx.createMediaElementSource(audio);
+  const dest = audioCtx.createMediaStreamDestination();
+  source.connect(dest);
+  source.connect(audioCtx.destination);
+
+  const mixed = new MediaStream([
+    ...stream.getVideoTracks(),
+    ...dest.stream.getAudioTracks()
+  ]);
+
+  const recorder = new MediaRecorder(mixed);
+  let chunks = [];
+
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.onstop = () => {
+    const blob = new Blob(chunks, {type:"video/webm"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "final_video.webm";
+    link.click();
+  };
+
+  audio.play();
+  recorder.start();
+  setTimeout(() => recorder.stop(), audio.duration * 1000);
+}
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (bg) ctx.drawImage(bg, 0, 0);
