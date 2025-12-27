@@ -1,65 +1,89 @@
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const bg = document.getElementById("bg");
+const video = document.getElementById("video");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight - 220;
+let activeText = null;
 
-let textX = canvas.width / 2;
-let textY = 120;
+/* Upload image */
+document.getElementById("imgInput").addEventListener("change", e => {
+  bg.src = URL.createObjectURL(e.target.files[0]);
+  video.src = "";
+});
 
-let emojiX = 60;
-let emojiY = 200;
+/* Upload video */
+document.getElementById("videoInput").addEventListener("change", e => {
+  video.src = URL.createObjectURL(e.target.files[0]);
+  bg.src = "";
+});
 
-const emoji = new Image();
-emoji.src = "heart.png"; // iPhone emoji PNG
+/* Add text */
+document.getElementById("addText").onclick = () => {
+  const t = document.createElement("div");
+  t.className = "text";
+  t.contentEditable = true;
+  t.innerHTML = "Write here ❤️";
+  canvas.appendChild(t);
+  activeText = t;
+  drag(t);
+  twemoji.parse(t);
+};
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+/* Color */
+document.getElementById("colorPicker").oninput = e => {
+  if (activeText) activeText.style.color = e.target.value;
+};
 
-  // TEXT
-  const text = document.getElementById("textInput").value;
-  const fontSize = document.getElementById("fontSize").value;
-  const lineHeight = document.getElementById("lineHeight").value;
+/* Font size */
+document.getElementById("fontSize").oninput = e => {
+  if (activeText) activeText.style.fontSize = e.target.value + "px";
+};
 
-  ctx.fillStyle = "white";
-  ctx.font = `${fontSize}px Times New Roman`;
-  ctx.textAlign = "center";
+/* Stroke */
+document.getElementById("strokeBtn").onclick = () => {
+  if (activeText) activeText.classList.toggle("stroke");
+};
 
-  let lines = text.split("\n");
-  lines.forEach((line, i) => {
-    ctx.fillText(line, textX, textY + i * lineHeight);
-  });
+/* Gradient */
+document.getElementById("gradientBtn").onclick = () => {
+  if (activeText) activeText.classList.toggle("gradient");
+};
 
-  // EMOJI
-  ctx.drawImage(emoji, emojiX, emojiY, 48, 48);
+/* Emojis */
+document.querySelectorAll(".emoji").forEach(btn => {
+  btn.onclick = () => {
+    if (activeText) {
+      activeText.innerHTML += " " + btn.dataset.emoji;
+      twemoji.parse(activeText);
+    }
+  };
+});
+
+/* Drag text */
+function drag(el) {
+  let isDown = false, ox, oy;
+
+  el.onmousedown = e => {
+    isDown = true;
+    activeText = el;
+    ox = e.offsetX;
+    oy = e.offsetY;
+  };
+
+  document.onmousemove = e => {
+    if (!isDown) return;
+    el.style.left = e.pageX - ox + "px";
+    el.style.top = e.pageY - oy + "px";
+  };
+
+  document.onmouseup = () => isDown = false;
 }
 
-setInterval(draw, 30);
-
-// MOVE TEXT OR EMOJI
-let dragging = null;
-
-canvas.addEventListener("mousedown", e => {
-  const x = e.offsetX;
-  const y = e.offsetY;
-
-  if (x > emojiX && x < emojiX + 48 && y > emojiY && y < emojiY + 48) {
-    dragging = "emoji";
-  } else {
-    dragging = "text";
-  }
-});
-
-canvas.addEventListener("mousemove", e => {
-  if (!dragging) return;
-
-  if (dragging === "emoji") {
-    emojiX = e.offsetX;
-    emojiY = e.offsetY;
-  } else {
-    textX = e.offsetX;
-    textY = e.offsetY;
-  }
-});
-
-canvas.addEventListener("mouseup", () => dragging = null);
+/* Export PNG full quality */
+document.getElementById("exportBtn").onclick = () => {
+  html2canvas(canvas, { scale: 3 }).then(c => {
+    const a = document.createElement("a");
+    a.href = c.toDataURL("image/png");
+    a.download = "iphone-style-text.png";
+    a.click();
+  });
+};
