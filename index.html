@@ -1,24 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Text Editor</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPhone Font & Emoji Editor</title>
+
+<!-- iPhone-like font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- iPhone emoji -->
+<script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
+
+<!-- Export -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#0b0b10;
+  font-family:Inter,-apple-system;
+  color:white;
+}
+
+/* Opening animation */
+.app{animation:intro .6s ease}
+@keyframes intro{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1}
+}
+
+/* Canvas */
+.editor{
+  position:relative;
+  height:70vh;
+  background:black;
+  overflow:hidden;
+}
+
+video,img{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Text */
+.text{
+  position:absolute;
+  top:40%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:26px;
+  padding:10px;
+  cursor:move;
+  text-align:center;
+  outline:none;
+}
+
+.stroke{-webkit-text-stroke:2px black}
+.gradient{
+  background:linear-gradient(45deg,#ff416c,#ffcc70);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* Animations */
+.fade{animation:fade 2s infinite alternate}
+.zoom{animation:zoom 2s infinite alternate}
+
+@keyframes fade{from{opacity:.3}to{opacity:1}}
+@keyframes zoom{
+  from{transform:translate(-50%,-50%) scale(1)}
+  to{transform:translate(-50%,-50%) scale(1.1)}
+}
+
+/* Controls */
+.controls{
+  background:#0b0b10;
+  padding:10px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:center;
+}
+
+button,input,select{
+  padding:8px 10px;
+  border:none;
+  border-radius:10px;
+  font-size:13px;
+}
+
+button{
+  background:linear-gradient(135deg,#7f5cff,#00e5ff);
+  color:white;
+  font-weight:600;
+}
+button:active{transform:scale(.95)}
+input[type=color]{padding:0;width:36px;height:36px}
+input[type=range]{width:80px}
+select{background:#151525;color:white}
+</style>
 </head>
+
 <body>
 
-<div class="controls">
-  <textarea id="textInput" placeholder="Write whatever you want..."></textarea>
+<div class="app">
 
-  <label>Font Size</label>
-  <input type="range" id="fontSize" min="16" max="50" value="24">
-
-  <label>Line Spacing</label>
-  <input type="range" id="lineHeight" min="20" max="60" value="32">
+<div class="editor" id="canvas">
+  <video id="video" autoplay muted loop></video>
+  <img id="bg">
 </div>
 
-<canvas id="canvas"></canvas>
+<div class="controls">
+  <input type="file" accept="image/*" onchange="setImg(event)">
+  <input type="file" accept="video/*" onchange="setVideo(event)">
+  <button onclick="addText()">+ Text</button>
 
-<script src="script.js"></script>
+  <input type="color" onchange="styleText('color',this.value)">
+  <input type="range" min="14" max="60" onchange="styleText('size',this.value)">
+
+  <button onclick="toggle('stroke')">Stroke</button>
+  <button onclick="toggle('gradient')">Gradient</button>
+
+  <select onchange="anim(this.value)">
+    <option value="">No Anim</option>
+    <option value="fade">Fade</option>
+    <option value="zoom">Zoom</option>
+  </select>
+
+  <button onclick="addEmoji('❤️')">❤️</button>
+  <button onclick="addEmoji('🥺')">🥺</button>
+  <button onclick="addEmoji('✨')">✨</button>
+
+  <button onclick="exportPNG()">PNG</button>
+  <button onclick="startRec()">REC</button>
+  <button onclick="stopRec()">STOP</button>
+</div>
+
+</div>
+
+<script>
+const canvas=document.getElementById("canvas");
+const bg=document.getElementById("bg");
+const video=document.getElementById("video");
+let active=null;
+
+/* Background */
+function setImg(e){bg.src=URL.createObjectURL(e.target.files[0]);video.src=""}
+function setVideo(e){video.src=URL.createObjectURL(e.target.files[0]);bg.src=""}
+
+/* Text */
+function addText(){
+  let t=document.createElement("div");
+  t.className="text";
+  t.contentEditable=true;
+  t.innerHTML="Write here ❤️";
+  canvas.appendChild(t);
+  select(t);
+  drag(t);
+  twemoji.parse(t);
+}
+function select(t){active=t}
+function styleText(type,val){
+  if(!active) return;
+  if(type=="color") active.style.color=val;
+  if(type=="size") active.style.fontSize=val+"px";
+}
+function toggle(c){if(active) active.classList.toggle(c)}
+function anim(a){
+  if(!active) return;
+  active.classList.remove("fade","zoom");
+  if(a) active.classList.add(a);
+}
+function addEmoji(e){
+  if(active){
+    active.innerHTML+=" "+e;
+    twemoji.parse(active);
+  }
+}
+
+/* Drag */
+function drag(el){
+  let d=false,ox,oy;
+  el.onmousedown=e=>{d=true;select(el);ox=e.offsetX;oy=e.offsetY}
+  document.onmousemove=e=>{
+    if(!d) return;
+    el.style.left=e.pageX-ox+"px";
+    el.style.top=e.pageY-oy+"px";
+  }
+  document.onmouseup=()=>d=false;
+}
+
+/* Export PNG */
+function exportPNG(){
+  html2canvas(canvas,{scale:2}).then(c=>{
+    let a=document.createElement("a");
+    a.href=c.toDataURL("image/png");
+    a.download="iphone-text.png";
+    a.click();
+  });
+}
+
+/* Record WebM */
+let rec,chunk=[];
+function startRec(){
+  let s=canvas.captureStream(30);
+  rec=new MediaRecorder(s);
+  rec.ondataavailable=e=>chunk.push(e.data);
+  rec.onstop=()=>{
+    let b=new Blob(chunk,{type:"video/webm"});
+    let a=document.createElement("a");
+    a.href=URL.createObjectURL(b);
+    a.download="iphone-text.webm";
+    a.click();
+    chunk=[];
+  };
+  rec.start();
+}
+function stopRec(){if(rec) rec.stop()}
+</script>
+
 </body>
 </html>
