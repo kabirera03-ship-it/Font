@@ -2,39 +2,51 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Text Editor</title>
+<title>Neon Text Editor</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>TEXT EDITOR</h1>
 
-<input type="file" id="mediaInput" accept="image/*,video/*">
+<div class="canvas-box">
+  <canvas id="canvas"></canvas>
+</div>
 
-<select id="ratio">
-  <option value="1">Instagram 1:1</option>
-  <option value="0.5625">Reel / Story</option>
-</select>
+<div class="controls">
+
+<input type="file" id="imageInput" accept="image/*">
+<input type="file" id="videoInput" accept="video/*">
+<input type="file" id="audioInput" accept="audio/*">
 
 <input type="text" id="textInput" placeholder="Write text">
 
-<input type="range" id="size" min="20" max="120" value="48">
+<select id="fontFamily">
+  <option value="Arial">iOS Style</option>
+  <option value="Georgia">Serif</option>
+  <option value="Courier New">Mono</option>
+</select>
 
 <select id="animation">
-  <option value="none">No Animation</option>
+  <option value="none">None</option>
   <option value="fade">Fade</option>
   <option value="zoom">Zoom</option>
 </select>
 
-<button onclick="addText()">ADD TEXT</button>
-<button onclick="download()">DOWNLOAD</button>
+<input type="range" id="fontSize" min="20" max="140" value="60">
 
-<canvas id="canvas"></canvas>
+<button onclick="addText()">ADD TEXT</button>
+<button onclick="extractAudio()">EXTRACT AUDIO</button>
+<button onclick="downloadImage()">DOWNLOAD IMAGE</button>
+<button onclick="exportVideo()">DOWNLOAD VIDEO</button>
+
+<audio id="audioPlayer" controls></audio>
+
+</div>
 
 <script src="script.js"></script>
 </body>
-</html>    <option value="zoom">Zoom</option>
+</html></html>    <option value="zoom">Zoom</option>
   </select>
 
   <button onclick="addText()">ADD TEXT</button>
