@@ -1,40 +1,53 @@
 body {
+  margin: 0;
   background: black;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro", Arial;
+  color: cyan;
+  font-family: Arial, sans-serif;
   text-align: center;
 }
 
 h1 {
-  color: cyan;
-  text-shadow: 0 0 15px cyan;
+  margin: 15px;
+  text-shadow: 0 0 20px cyan;
 }
 
-input, select, button {
-  width: 90%;
-  margin: 6px;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-}
-
-button {
-  background: linear-gradient(90deg, #00f2ff, #7a00ff);
-  color: white;
-  font-weight: bold;
+.canvas-box {
+  width: 320px;
+  height: 320px;
+  margin: auto;
+  border: 3px solid cyan;
+  box-shadow: 0 0 25px cyan;
 }
 
 canvas {
-  margin-top: 20px;
-  border: 3px solid cyan;
-  max-width: 100%;
-  touch-action: none;
-}}
+  width: 100%;
+  height: 100%;
+  background: black;
+}
 
-.emoji-bar img {
-  width: 32px;
-  margin-right: 6px;
+.controls {
+  max-width: 350px;
+  margin: 15px auto;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  border-radius: 12px;
+  border: none;
+}
+
+button {
+  background: linear-gradient(90deg, #00ffff, #0088ff);
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  box-shadow: 0 0 20px cyan;
+}  margin-right: 6px;
   cursor: pointer;
 }
 
