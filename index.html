@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quote Photo Editor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Quote Photo Editor</h2>
+
+<input type="file" id="upload" accept="image/*">
+<br><br>
+
+<textarea id="quote" placeholder="Paste your full text here..."></textarea>
+
+<button onclick="download()">Download Image</button>
+
+<div id="canvasWrapper">
+  <canvas id="canvas"></canvas>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
