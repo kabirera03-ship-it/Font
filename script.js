@@ -1,40 +1,77 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const textBox = document.getElementById("textBox");
 
 canvas.width = 1080;
-canvas.height = 1080;
+canvas.height = 1920;
 
-let bgImage = null;
-let texts = [];
-let draggingText = null;
-
-let audioBlob = null;
-let audioURL = null;
-let videoFile = null;
+let bgImg = null;
 
 /* IMAGE UPLOAD */
-document.getElementById("imageInput").addEventListener("change", e => {
-  const file = e.target.files[0];
+imageInput.onchange = e => {
   const img = new Image();
   img.onload = () => {
-    bgImage = img;
+    bgImg = img;
     draw();
   };
-  img.src = URL.createObjectURL(file);
+  img.src = URL.createObjectURL(e.target.files[0]);
+};
+
+/* TEXT SIZE */
+fontSize.oninput = () => {
+  textBox.style.fontSize = fontSize.value + "px";
+};
+
+/* LINE HEIGHT */
+lineHeight.oninput = () => {
+  textBox.style.lineHeight = lineHeight.value;
+};
+
+/* DRAG TEXT */
+let dragging = false;
+let offsetX, offsetY;
+
+textBox.addEventListener("mousedown", e => {
+  dragging = true;
+  offsetX = e.offsetX;
+  offsetY = e.offsetY;
 });
 
-/* AUDIO UPLOAD */
-document.getElementById("audioInput").addEventListener("change", e => {
-  audioBlob = e.target.files[0];
-  audioURL = URL.createObjectURL(audioBlob);
-  document.getElementById("audioPlayer").src = audioURL;
+document.addEventListener("mousemove", e => {
+  if (!dragging) return;
+  textBox.style.left = (e.pageX - editor.offsetLeft - offsetX) + "px";
+  textBox.style.top = (e.pageY - editor.offsetTop - offsetY) + "px";
 });
 
-/* VIDEO UPLOAD */
-document.getElementById("videoInput").addEventListener("change", e => {
-  videoFile = e.target.files[0];
-});
+document.addEventListener("mouseup", () => dragging = false);
 
+/* DRAW */
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if (bgImg) ctx.drawImage(bgImg,0,0,canvas.width,canvas.height);
+}
+
+/* DOWNLOAD */
+function downloadImage() {
+  draw();
+
+  ctx.fillStyle = "#000";
+  ctx.font = `${fontSize.value}px system-ui`;
+  ctx.textAlign = "center";
+
+  const lines = textBox.innerText.split("\n");
+  let y = parseInt(textBox.style.top) * (canvas.height / editor.clientHeight);
+
+  lines.forEach(line => {
+    ctx.fillText(line, canvas.width / 2, y);
+    y += fontSize.value * lineHeight.value;
+  });
+
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = "tiktok-text.png";
+  a.click();
+}
 /* ADD TEXT */
 function addText() {
   texts.push({
