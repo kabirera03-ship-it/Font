@@ -1,40 +1,58 @@
 body {
-  margin: 0;
-  background: black;
-  color: cyan;
-  font-family: Arial, sans-serif;
+  background: #000;
+  color: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
   text-align: center;
 }
 
 h1 {
-  margin: 15px;
-  text-shadow: 0 0 20px cyan;
+  margin: 10px;
 }
 
-.canvas-box {
-  width: 320px;
-  height: 320px;
+#editor {
+  position: relative;
+  width: 360px;
+  height: 640px;
   margin: auto;
-  border: 3px solid cyan;
-  box-shadow: 0 0 25px cyan;
+  background: #111;
 }
 
 canvas {
   width: 100%;
   height: 100%;
-  background: black;
+}
+
+#textBox {
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  width: 80%;
+  color: #000;
+  font-size: 32px;
+  line-height: 1.4;
+  text-align: center;
+  outline: none;
+  cursor: move;
+  user-select: text;
 }
 
 .controls {
-  max-width: 350px;
-  margin: 15px auto;
+  width: 360px;
+  margin: 10px auto;
 }
 
-input, select, button {
+input, button {
   width: 100%;
-  padding: 12px;
   margin: 6px 0;
-  border-radius: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  background: #fff;
+  font-weight: bold;
+}  border-radius: 12px;
   border: none;
 }
 
