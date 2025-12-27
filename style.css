@@ -1,31 +1,95 @@
+@font-face {
+  font-family: "SFPro";
+  src: url("assets/fonts/SF-Pro.ttf");
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: black;
+  background: #0b0b10;
+  font-family: SFPro, -apple-system, BlinkMacSystemFont;
   color: white;
-  font-family: "Times New Roman", Times, serif;
+}
+
+.app {
+  animation: open .4s ease;
+}
+
+@keyframes open {
+  from { opacity:0; transform:scale(.96); }
+  to { opacity:1; transform:scale(1); }
+}
+
+.editor {
+  position: relative;
+  height: 70vh;
+  background: black;
+  overflow: hidden;
+}
+
+video, img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px;
+  text-align: center;
+  cursor: move;
+  outline: none;
+  user-select: none;
+}
+
+.stroke {
+  -webkit-text-stroke: 2px black;
+}
+
+.gradient {
+  background: linear-gradient(45deg, #ff416c, #ffcc70);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .controls {
   padding: 10px;
-  background: #111;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
 }
 
-textarea {
-  width: 100%;
-  height: 80px;
-  background: #000;
+button, input {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+button {
+  background: linear-gradient(135deg, #7f5cff, #00e5ff);
   color: white;
-  border: 1px solid #444;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 18px;
+  font-weight: 600;
 }
 
-label {
-  display: block;
-  margin-top: 10px;
+button:active {
+  transform: scale(.95);
 }
 
-canvas {
-  display: block;
-  width: 100%;
+input[type="color"] {
+  padding: 0;
+  width: 36px;
+  height: 36px;
+}
+
+input[type="range"] {
+  width: 90px;
 }
