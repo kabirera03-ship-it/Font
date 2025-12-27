@@ -1,0 +1,32 @@
+body {
+  background: #0a0a0a;
+  color: white;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+textarea {
+  width: 90%;
+  height: 180px;
+  margin: 10px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  background: #ff4f8b;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#canvasWrapper {
+  margin-top: 20px;
+}
+
+canvas {
+  max-width: 90%;
+  border-radius: 10px;
+}
