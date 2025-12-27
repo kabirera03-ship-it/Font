@@ -1,88 +1,65 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let img = new Image();
-let emoji = "❤️";
-let emojiX = 200;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight - 220;
+
+let textX = canvas.width / 2;
+let textY = 120;
+
+let emojiX = 60;
 let emojiY = 200;
 
-document.getElementById("upload").addEventListener("change", e => {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-  reader.onload = () => {
-    img.src = reader.result;
-  };
-  reader.readAsDataURL(file);
-});
-
-img.onload = () => {
-  canvas.width = img.width;
-  canvas.height = img.height;
-  draw();
-};
-
-document.getElementById("quote").addEventListener("input", draw);
+const emoji = new Image();
+emoji.src = "heart.png"; // iPhone emoji PNG
 
 function draw() {
-  ctx.drawImage(img, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Dark overlay
-  ctx.fillStyle = "rgba(0,0,0,0.35)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // TEXT
+  const text = document.getElementById("textInput").value;
+  const fontSize = document.getElementById("fontSize").value;
+  const lineHeight = document.getElementById("lineHeight").value;
 
-  // Title
-  ctx.fillStyle = "#ff9db5";
-  ctx.font = "40px 'Times New Roman'";
-  ctx.textAlign = "center";
-  ctx.fillText(
-    "“The Weight of Wanting to Be Enough”",
-    canvas.width / 2,
-    80
-  );
-
-  // Body text
   ctx.fillStyle = "white";
-  ctx.font = "26px 'Times New Roman'";
-  wrapText(
-    document.getElementById("quote").value,
-    canvas.width / 2,
-    140,
-    canvas.width * 0.8,
-    34
-  );
+  ctx.font = `${fontSize}px Times New Roman`;
+  ctx.textAlign = "center";
 
-  // Emoji
-  ctx.font = "60px Arial";
-  ctx.fillText(emoji, emojiXx = emojiX, emojiY);
+  let lines = text.split("\n");
+  lines.forEach((line, i) => {
+    ctx.fillText(line, textX, textY + i * lineHeight);
+  });
+
+  // EMOJI
+  ctx.drawImage(emoji, emojiX, emojiY, 48, 48);
 }
 
-function wrapText(text, x, y, maxWidth, lineHeight) {
-  const words = text.split(" ");
-  let line = "";
-  for (let i = 0; i < words.length; i++) {
-    const testLine = line + words[i] + " ";
-    const metrics = ctx.measureText(testLine);
-    if (metrics.width > maxWidth && i > 0) {
-      ctx.fillText(line, x, y);
-      line = words[i] + " ";
-      y += lineHeight;
-    } else {
-      line = testLine;
-    }
-  }
-  ctx.fillText(line, x, y);
-}
+setInterval(draw, 30);
 
-// Drag emoji
+// MOVE TEXT OR EMOJI
+let dragging = null;
+
 canvas.addEventListener("mousedown", e => {
-  emojiX = e.offsetX;
-  emojiY = e.offsetY;
-  draw();
+  const x = e.offsetX;
+  const y = e.offsetY;
+
+  if (x > emojiX && x < emojiX + 48 && y > emojiY && y < emojiY + 48) {
+    dragging = "emoji";
+  } else {
+    dragging = "text";
+  }
 });
 
-function download() {
-  const link = document.createElement("a");
-  link.download = "quote.jpg";
-  link.href = canvas.toDataURL("image/jpeg", 0.95);
-  link.click();
-}
+canvas.addEventListener("mousemove", e => {
+  if (!dragging) return;
+
+  if (dragging === "emoji") {
+    emojiX = e.offsetX;
+    emojiY = e.offsetY;
+  } else {
+    textX = e.offsetX;
+    textY = e.offsetY;
+  }
+});
+
+canvas.addEventListener("mouseup", () => dragging = null);
