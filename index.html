@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Quote Photo Editor</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Text Editor</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<h2>Quote Photo Editor</h2>
+<div class="controls">
+  <textarea id="textInput" placeholder="Write whatever you want..."></textarea>
 
-<input type="file" id="upload" accept="image/*">
-<br><br>
+  <label>Font Size</label>
+  <input type="range" id="fontSize" min="16" max="50" value="24">
 
-<textarea id="quote" placeholder="Paste your full text here..."></textarea>
-
-<button onclick="download()">Download Image</button>
-
-<div id="canvasWrapper">
-  <canvas id="canvas"></canvas>
+  <label>Line Spacing</label>
+  <input type="range" id="lineHeight" min="20" max="60" value="32">
 </div>
+
+<canvas id="canvas"></canvas>
 
 <script src="script.js"></script>
 </body>
