@@ -2,39 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Text Editor Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Editor</title>
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="fonts/sf-ui.css">
 </head>
 <body>
 
 <h1>TEXT EDITOR</h1>
 
-<input type="file" id="media" accept="image/*,video/*">
+<input type="file" id="mediaInput" accept="image/*,video/*">
 
-<select id="sizePreset">
-  <option value="ig">Instagram 1:1</option>
-  <option value="tt">TikTok 9:16</option>
+<select id="ratio">
+  <option value="1">Instagram 1:1</option>
+  <option value="0.5625">Reel / Story</option>
 </select>
+
+<input type="text" id="textInput" placeholder="Write text">
+
+<input type="range" id="size" min="20" max="120" value="48">
+
+<select id="animation">
+  <option value="none">No Animation</option>
+  <option value="fade">Fade</option>
+  <option value="zoom">Zoom</option>
+</select>
+
+<button onclick="addText()">ADD TEXT</button>
+<button onclick="download()">DOWNLOAD</button>
 
 <canvas id="canvas"></canvas>
 
-<div class="panel">
-  <input id="textInput" placeholder="Write text">
-  
-  <select id="fontSelect">
-    <option value="sf">iOS Style</option>
-    <option value="sans">Sans</option>
-    <option value="serif">Serif</option>
-  </select>
-
-  <input type="color" id="textColor" value="#000000">
-  <input type="range" id="textSize" min="20" max="150" value="50">
-
-  <select id="animation">
-    <option value="none">No animation</option>
-    <option value="fade">Fade</option>
-    <option value="zoom">Zoom</option>
+<script src="script.js"></script>
+</body>
+</html>    <option value="zoom">Zoom</option>
   </select>
 
   <button onclick="addText()">ADD TEXT</button>
