@@ -1,40 +1,77 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const video = document.getElementById("video");
 
-let img = null;
-let isVideo = false;
+let bg = null;
+let textObj = null;
+let dragging = false;
 
-let text = "";
-let x = 540, y = 540;
-let size = 50;
-let color = "#000";
-let font = "SF";
-let anim = "none";
-let alpha = 1;
-let scale = 1;
+const textInput = document.getElementById("textInput");
+const sizeInput = document.getElementById("size");
 
-canvas.width = 1080;
-canvas.height = 1080;
+document.getElementById("mediaInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-/* Upload image or video */
-media.onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    bg = new Image();
+    bg.onload = () => {
+      canvas.width = bg.width;
+      canvas.height = bg.height;
+      draw();
+    };
+    bg.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
 
-  if (f.type.startsWith("video")) {
-    isVideo = true;
-    video.src = URL.createObjectURL(f);
-    video.play();
-    drawVideo();
-  } else {
-    isVideo = false;
-    img = new Image();
-    img.src = URL.createObjectURL(f);
-    img.onload = draw;
+function addText() {
+  textObj = {
+    text: textInput.value,
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    size: sizeInput.value
+  };
+  draw();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (bg) ctx.drawImage(bg, 0, 0);
+
+  if (textObj) {
+    ctx.font = `${textObj.size}px -apple-system, Arial`;
+    ctx.textAlign = "center";
+
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 4;
+    ctx.strokeText(textObj.text, textObj.x, textObj.y);
+
+    ctx.fillStyle = "white";
+    ctx.fillText(textObj.text, textObj.x, textObj.y);
   }
-};
+}
 
+canvas.addEventListener("pointerdown", e => {
+  dragging = true;
+});
+
+canvas.addEventListener("pointermove", e => {
+  if (!dragging || !textObj) return;
+  const rect = canvas.getBoundingClientRect();
+  textObj.x = e.clientX - rect.left;
+  textObj.y = e.clientY - rect.top;
+  draw();
+});
+
+canvas.addEventListener("pointerup", () => dragging = false);
+
+function download() {
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = "text-editor.png";
+  a.click();
+}
 /* Canvas size */
 sizePreset.onchange = e => {
   if (e.target.value === "tt") {
