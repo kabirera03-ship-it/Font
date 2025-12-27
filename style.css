@@ -1,40 +1,68 @@
 @font-face {
-  font-family: "SFPro";
-  src: url("assets/fonts/SF-Pro.ttf");
+  font-family: "iPhone";
+  src: local("San Francisco"), local("Helvetica Neue"), local("Arial");
 }
 
 * {
   box-sizing: border-box;
+  font-family: "iPhone", sans-serif;
 }
 
 body {
-  margin: 0;
-  background: #0b0b10;
-  font-family: SFPro, -apple-system, BlinkMacSystemFont;
-  color: white;
+  background: #000;
+  color: #fff;
+  padding: 10px;
 }
 
-.app {
-  animation: open .4s ease;
+.top {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
-@keyframes open {
-  from { opacity:0; transform:scale(.96); }
-  to { opacity:1; transform:scale(1); }
-}
-
-.editor {
-  position: relative;
-  height: 70vh;
-  background: black;
-  overflow: hidden;
-}
-
-video, img {
-  position: absolute;
+textarea {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 80px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.emoji-bar img {
+  width: 32px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+#canvasWrapper {
+  background: #222;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+canvas {
+  background: #000;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #1da1f2;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 6px;
+}  object-fit: cover;
 }
 
 .text {
