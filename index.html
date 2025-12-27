@@ -1,40 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iPhone Font Editor</title>
-
-<link rel="stylesheet" href="style.css">
-
-<script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>iPhone Text Editor</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="app">
+<div class="top">
+  <input type="file" id="bgUpload" accept="image/*">
+  
+  <select id="sizePreset">
+    <option value="1080x1080">Instagram Post</option>
+    <option value="1080x1920">Instagram Story / Reels</option>
+    <option value="720x1280">TikTok</option>
+  </select>
 
-  <div class="editor" id="canvas">
-    <video id="video" autoplay muted loop></video>
-    <img id="bg">
-  </div>
+  <input type="color" id="textColor" value="#000000">
+</div>
 
-  <div class="controls">
-    <input type="file" accept="image/*" id="imgInput">
-    <input type="file" accept="video/*" id="videoInput">
+<textarea id="textInput" placeholder="Write anything here..."></textarea>
 
-    <button id="addText">Add Text</button>
+<div class="controls">
+  <label>Font Size</label>
+  <input type="range" id="fontSize" min="16" max="80" value="32">
 
-    <input type="color" id="colorPicker">
-    <input type="range" min="14" max="80" id="fontSize">
+  <label>Line Spacing</label>
+  <input type="range" id="lineHeight" min="1" max="2.5" step="0.1" value="1.4">
+</div>
 
-    <button id="strokeBtn">Stroke</button>
-    <button id="gradientBtn">Gradient</button>
+<div class="emoji-bar">
+  <img src="emojis/heart.png">
+  <img src="emojis/fire.png">
+  <img src="emojis/skull.png">
+  <img src="emojis/cry.png">
+  <img src="emojis/eyes.png">
+  <img src="emojis/star.png">
+</div>
 
-    <button class="emoji" data-emoji="❤️">❤️</button>
-    <button class="emoji" data-emoji="🥺">🥺</button>
-    <button class="emoji" data-emoji="✨">✨</button>
+<div id="canvasWrapper">
+  <canvas id="canvas"></canvas>
+</div>
+
+<button id="download">Download Full Quality</button>
+
+<script src="script.js"></script>
+</body>
+</html>    <button class="emoji" data-emoji="✨">✨</button>
     <button class="emoji" data-emoji="🕊️">🕊️</button>
 
     <button id="exportBtn">Download PNG</button>
